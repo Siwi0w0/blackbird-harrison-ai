@@ -1,7 +1,7 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import LoginForm from './components/LoginForm/index';
+import LoginForm from './components/LoginForm';
 
 const theme = createTheme();
 

@@ -8,34 +8,40 @@ import Grid from '@mui/material/Grid';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import logo from '../../assets/logo.svg';
-import emailValidator from 'email-validator';
 import { validateEmail, validatePassword } from './validation';
 
 export default function LoginForm() {
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [showAlert, setShowAlert] = useState(false);
+  const [showErrorEmail, setShowErrorEmail] = useState(false);
+  const [showErrorPwd, setShowErrorPwd] = useState(false);
 
-  const validateForm = (event) => {
+  function validateForm(event) {
     event.preventDefault()
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
-    
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
-  
-    setEmailError(emailError);
-    setPasswordError(passwordError);
-    
-    // If there are no errors, show a success alert
-    if (!emailError && !passwordError) {
-      setShowAlert("Login Successful");
-      setTimeout(() => setShowAlert(false), 6000);
+
+    // Add validation code here
+
+    const emailValidateResult = validateEmail(email)
+
+    if (!emailValidateResult) {
+      setShowErrorEmail("Please enter valid email address");
     } else {
-      setShowAlert(false);
+      setShowErrorEmail(false);
     }
-  }  
+
+    const pwdValidateError = validatePassword(password)
+
+    if (pwdValidateError) {
+      setShowErrorPwd(pwdValidateError);
+    } else {
+      setShowErrorPwd(false);
+    }
+
+    return (emailValidateResult && !pwdValidateError)
+
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -44,7 +50,9 @@ export default function LoginForm() {
       email: data.get('email'),
       password: data.get('password'),
     });
-    validateForm(event);
+    if (validateForm(event)) {
+      setShowAlert("Login Successful");
+    }
   };
 
   return (
@@ -93,6 +101,8 @@ export default function LoginForm() {
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
+              error={showErrorEmail}
+              helperText={showErrorEmail}
               margin="normal"
               required
               fullWidth
@@ -101,11 +111,10 @@ export default function LoginForm() {
               name="email"
               autoComplete="email"
               autoFocus
-              //error message
-              error={!!emailError}
-              helperText={emailError}
             />
             <TextField
+              error={showErrorPwd}
+              helperText={showErrorPwd}
               margin="normal"
               required
               fullWidth
@@ -114,8 +123,6 @@ export default function LoginForm() {
               type="password"
               id="password"
               autoComplete="current-password"
-              error={!!passwordError}
-              helperText={passwordError}
             />
             <Button
               type="submit"
